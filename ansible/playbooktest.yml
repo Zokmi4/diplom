@@ -1,0 +1,137 @@
+---
+- name: Install Docker and Docker Compose on dev
+  hosts: gcp_dev
+  become: true
+  tasks:
+    - name: Install Docker and Docker Compose
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+      notify:
+        - Start Docker
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        group: docker
+
+    - name: Start Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Install k3s on prod
+  hosts: gcp_prod
+  become: true
+  tasks:
+    - name: Install k3s
+      shell: "curl -sfL https://get.k3s.io | sh -"
+
+    - name: Ensure k3s is running
+      shell: "sudo systemctl status k3s"
+      register: k3s_status
+      ignore_errors: true
+
+    - name: Check k3s nodes
+      shell: "sudo k3s kubectl get nodes"
+      register: k3s_nodes
+      ignore_errors: true
+
+    - name: Create symlink for kubectl
+      file:
+        src: /usr/local/bin/k3s
+        dest: /usr/local/bin/kubectl
+        state: link
+
+    - name: Update .bashrc for KUBECONFIG
+      lineinfile:
+        path: "~/.bashrc"
+        line: "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml"
+        state: present
+
+    - name: Set permissions for K3s kubeconfig
+      file:
+        path: /etc/rancher/k3s/k3s.yaml
+        mode: '0644'
+
+    - name: Download Helm
+      get_url:
+        url: "https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz"
+        dest: "/tmp/helm.tar.gz"
+
+    - name: Extract Helm
+      unarchive:
+        src: "/tmp/helm.tar.gz"
+        dest: "/tmp/"
+        remote_src: yes
+
+    - name: Move Helm to /usr/local/bin
+      command: "sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm"
+
+    - name: Cleanup Helm files
+      file:
+        path: "/tmp/{{ item }}"
+        state: absent
+      with_items:
+        - "helm.tar.gz"
+        - "linux-amd64"
+
+- name: Install Jenkins and necessary dependencies on test server
+  hosts: gcp_test
+  become: true
+  vars_files:
+    - vars/test.yml
+
+  tasks:
+    - name: Install necessary packages
+      apt:
+        name: "{{ required_packages }}"
+        state: present
+        update_cache: yes
+
+    - name: Ensure sources.list.d directory exists
+      file:
+        path: "{{ sources_list_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download Jenkins key
+      get_url:
+        url: "{{ jenkins_key_url }}"
+        dest: "{{ jenkins_key_dest }}"
+
+    - name: Create Jenkins repository file
+      copy:
+        dest: "{{ jenkins_repo_file }}"
+        content: "{{ jenkins_repo_content }}"
+        mode: '0644'
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    # Задачи для получения и вывода пароля администратора Jenkins
+    - name: Read Jenkins initial admin password
+      slurp:
+        src: /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_password_raw
+      when: "'gcp_test' in group_names"  # Проверяем, что хост в группе gcp_test
+
+    - name: Show Jenkins initial admin password
+      debug:
+        msg: "The Jenkins initial admin password is: {{ jenkins_password_raw.content | b64decode }}"
+      when: "'gcp_test' in group_names"  # Проверяем, что хост в группе gcp_test
