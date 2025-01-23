@@ -1,0 +1,7 @@
+gitlab_root_password: "prod-gitlab-password"  
+gitlab_url: "http://prod-server.local"
+
+minikube_version: "v1.25.0"  
+minikube_driver: "docker"     
+
+k8s_version: "v1.23.0"        

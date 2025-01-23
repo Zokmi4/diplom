@@ -1,0 +1,30 @@
+---
+- name: Add GitLab repository for installation
+  apt_repository:
+    repo: 'deb https://packages.gitlab.com/gitlab/gitlab-ce/debian/ jessie main'
+    state: present
+
+- name: Add GitLab public key
+  apt_key:
+    url: https://packages.gitlab.com/gpg.key
+    state: present
+
+- name: Install GitLab
+  apt:
+    name: gitlab-ce
+    state: present
+
+- name: Start and enable GitLab service
+  systemd:
+    name: gitlab
+    state: started
+    enabled: yes
+  ignore_errors: yes
+
+- name: Wait for GitLab to be up and running
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 80
+    state: started
+    delay: 10
+    timeout: 300

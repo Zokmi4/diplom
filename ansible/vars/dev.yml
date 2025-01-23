@@ -1,0 +1,6 @@
+gitlab_runner_tags:
+  - dev
+
+gitlab_runner_executor: "docker"  
+gitlab_runner_docker_image: "docker:latest"
+
