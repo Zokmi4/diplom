@@ -1,0 +1,26 @@
+---
+- name: Install Docker and Docker Compose on dev
+  hosts: gcp_dev
+  become: true
+  roles:
+    - docker
+
+- name: Install k3s on prod
+  hosts: gcp_prod
+  become: true
+  roles:
+    - k3s
+
+- name: Install Docker and Docker Compose on dev
+  hosts: gcp_prod
+  become: true
+  roles:
+    - docker
+    
+- name: Install Jenkins and necessary dependencies on test server
+  hosts: gcp_test
+  become: true
+  vars_files:
+    - vars/test.yml
+  roles:
+    - jenkins
