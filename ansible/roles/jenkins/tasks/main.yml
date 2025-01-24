@@ -7,7 +7,7 @@
 
 - name: Ensure sources.list.d directory exists
   file:
-    path: "{{ sources_list_dir }}"
+    path: "/etc/apt/sources.list.d"
     state: directory
     mode: '0755'
 
@@ -37,7 +37,14 @@
     state: started
     enabled: yes
 
-# Задачи для получения и вывода пароля администратора Jenkins
+- name: Wait for Jenkins to be ready (wait until port 8080 is open)
+  wait_for:
+    host: "{{ ansible_host }}"
+    port: 8080
+    delay: 10
+    timeout: 300
+    state: started
+
 - name: Read Jenkins initial admin password
   slurp:
     src: /var/lib/jenkins/secrets/initialAdminPassword
