@@ -18,36 +18,6 @@ resource "google_compute_health_check" "default" {
   }
 }
 
-resource "google_compute_instance" "dev" {
-  name         = "dev-instance"
-  machine_type = "e2-medium"
-  zone         = "us-central1-a"
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-12"
-    }
-  }
-
-  network_interface {
-    network = "default"
-    access_config {}
-  }
-
-  metadata_startup_script = <<-EOF
-    #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y python3 python3-pip
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository ppa:ansible/ansible
-    sudo apt-get update
-    sudo apt-get install -y ansible
-    echo "Ansible installed on dev-instance"
-  EOF
-
-  depends_on = [google_compute_health_check.default]
-}
-
 resource "google_compute_instance" "test" {
   name         = "test-instance"
   machine_type = "e2-medium"
@@ -68,11 +38,7 @@ resource "google_compute_instance" "test" {
     #!/bin/bash
     sudo apt-get update
     sudo apt-get install -y python3 python3-pip
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository ppa:ansible/ansible
-    sudo apt-get update
-    sudo apt-get install -y ansible
-    echo "Ansible installed on test-instance"
+    echo "Python installed on test-instance"
   EOF
 
   depends_on = [google_compute_health_check.default]
@@ -98,31 +64,10 @@ resource "google_compute_instance" "prod" {
     #!/bin/bash
     sudo apt-get update
     sudo apt-get install -y python3 python3-pip
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository ppa:ansible/ansible
-    sudo apt-get update
-    sudo apt-get install -y ansible
-    echo "Ansible installed on prod-instance"
+    echo "Python installed on prod-instance"
   EOF
 
   depends_on = [google_compute_health_check.default]
-}
-
-resource "google_storage_bucket" "shared_bucket" {
-  name     = "bucket-diplom"
-  location = "US"
-}
-
-# Правило для разрешения доступа по SSH (порт 22)
-resource "google_compute_firewall" "ssh-firewall" {
-  name    = "ssh-firewall"
-  network = "default"
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["http-server"]
 }
 
 # Правило для разрешения доступа к Jenkins (порт 8080)
@@ -137,13 +82,28 @@ resource "google_compute_firewall" "jenkins-firewall" {
   target_tags   = ["http-server"]
 }
 
-# Output для dev-инстанса
-output "dev_instance_name" {
-  value = google_compute_instance.dev.name
+# Правило для разрешения HTTP трафика (порт 80)
+resource "google_compute_firewall" "http-firewall" {
+  name    = "http-firewall"
+  network = "default"
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["http-server"]
 }
 
-output "dev_instance_ip" {
-  value = google_compute_instance.dev.network_interface[0].access_config[0].nat_ip
+# Правило для разрешения HTTPS трафика (порт 443)
+resource "google_compute_firewall" "https-firewall" {
+  name    = "https-firewall"
+  network = "default"
+  allow {
+    protocol = "tcp"
+    ports    = ["443"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["http-server"]
 }
 
 # Output для test-инстанса
