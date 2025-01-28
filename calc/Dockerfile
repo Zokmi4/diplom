@@ -15,4 +15,4 @@ RUN pip install python-multipart
 COPY . /app
 
 # Запускаем приложение
-CMD ["uvicorn", "main:app", "--host", "34.132.154.216", "--port", "8080"
+CMD ["uvicorn", "main:app", "--host", "34.134.198.174", "--port", "8080"
