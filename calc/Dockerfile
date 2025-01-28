@@ -1,9 +1,18 @@
-FROM python:3.10-slim
+# Указываем базовый образ
+FROM python:3.10
+
+# Устанавливаем зависимости
 WORKDIR /app
 COPY requirements.txt .
+
+# Добавьте python-multipart в requirements.txt, если его нет
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-COPY static /app/static
-COPY templates /app/templates
-EXPOSE 8080
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+
+# Или установите python-multipart прямо
+RUN pip install python-multipart
+
+# Копируем файлы приложения в контейнер
+COPY . /app
+
+# Запускаем приложение
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"
