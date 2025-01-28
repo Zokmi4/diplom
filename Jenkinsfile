@@ -2,9 +2,18 @@ pipeline {
     agent { label 'agent1' }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone and Update Repository') {
             steps {
-                git branch: 'main', credentialsId: '2', url: 'https://github.com/Zokmi4/diplom.git'
+                script {
+                    // Клонирование репозитория
+                    git branch: 'main', credentialsId: '2', url: 'https://github.com/Zokmi4/diplom.git'
+
+                    // Обновление репозитория с помощью git fetch
+                    sh 'git fetch --all'  // Загружает все изменения, но не сливает их
+
+                    // Или можно использовать git pull, чтобы сразу применить изменения
+                    // sh 'git pull origin main'
+                }
             }
         }
 
@@ -44,3 +53,4 @@ pipeline {
         }
     }
 }
+
