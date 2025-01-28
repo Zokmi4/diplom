@@ -55,7 +55,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    dir('test/calc') {
+                    dir('calc/') {
                         sh """
 echo "Запуск контейнера с тегом: zokmi4/diplom:${env.BUILD_ID}"
 docker run -d --rm -p 8080:8080 zokmi4/diplom:${env.BUILD_ID}
