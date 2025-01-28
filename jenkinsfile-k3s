@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent 2' }
+    agent any
 
     environment {
         DOCKER_IMAGE = 'zokmi4/diplom'  // Указываем имя Docker образа
@@ -56,3 +56,13 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            echo 'Deployment succeeded!'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
