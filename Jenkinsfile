@@ -52,15 +52,21 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            emailext (
-                to: 'mazay.cod@gmail.com',
-                subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
-                body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
-                attachLog: true
-            )
-        }
+post {
+    always {
+        emailext (
+            to: 'mazay.cod@gmail.com',
+            subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
+            body: """
+            Статус сборки: ${currentBuild.currentResult}
+            Ссылка на сборку: ${env.BUILD_URL}
+            Параметры:
+            - Job Name: ${env.JOB_NAME}
+            - Build Number: ${env.BUILD_NUMBER}
+            - Build URL: ${env.BUILD_URL}
+            """,
+            attachLog: true
+        )
     }
+}
 }
