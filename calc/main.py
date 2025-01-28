@@ -25,16 +25,12 @@ async def calculate(a: float = Form(...), b: float = Form(...), operation: str =
     elif operation == "multiply":
         result = a * b
     elif operation == "divide":
-        result = a / b
+        if b == 0:
+            result = "Error: Division by zero"
+        else:
+            result = a / b
     else:
         result = "Invalid operation"
     
     template = env.get_template("index.html")
     return template.render(result=result)
-
-# Запуск сервера
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
- 
-#test
