@@ -2,14 +2,18 @@ pipeline {
     agent { label 'agent 2' }
 
     environment {
-        DOCKER_IMAGE = 'zokmi4/diplom:latest'  // Образ Docker для загрузки
-        KUBECONFIG = credentials('k3s')  // Учетные данные для подключения к Kubernetes (K3s)
+        DOCKER_IMAGE = 'zokmi4/diplom'  // Указываем имя Docker образа
+        DOCKER_TAG = 'latest'  // Указываем тег образа
+        KUBECONFIG = credentials('k3s')  // Учетные данные для доступа к Kubernetes
+        LOCAL_REGISTRY = 'localhost:5000'  // Локальный Docker registry
+        HELM_RELEASE_NAME = 'diplom-app'  // Имя релиза для Helm
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Clone Repository') {
             steps {
-                checkout scm
+                // Клонирование репозитория из ветки main
+                git branch: 'main', credentialsId: '2', url: 'https://github.com/Zokmi4/diplom.git'
             }
         }
 
@@ -22,7 +26,7 @@ pipeline {
                     }
                     
                     // Забираем Docker образ из Docker Hub
-                    sh "docker pull ${DOCKER_IMAGE}"
+                    sh "docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -30,9 +34,9 @@ pipeline {
         stage('Push to Local Docker Registry (Optional)') {
             steps {
                 script {
-                    // Если нужно, пушим в локальный Docker registry перед деплоем в K3s
-                    sh "docker tag ${DOCKER_IMAGE} localhost:5000/${DOCKER_IMAGE}"
-                    sh "docker push localhost:5000/${DOCKER_IMAGE}"
+                    // Тегируем и пушим в локальный Docker registry перед деплоем
+                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${LOCAL_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    sh "docker push ${LOCAL_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -40,22 +44,15 @@ pipeline {
         stage('Deploy to K3s') {
             steps {
                 script {
-                    // Применяем манифест Kubernetes для деплоя
-                    // Для простоты примера предполагаем, что у вас есть YAML-файл манифеста для деплоя (например, deployment.yaml)
-                    
-                    // Применяем deployment в K3s
-                    sh "kubectl --kubeconfig=$KUBECONFIG apply -f deployment.yaml"
+                    echo "Deploying ${HELM_RELEASE_NAME} with image ${LOCAL_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    // Применяем Helm чарты с новым образом
+                    sh """
+                    helm upgrade --install ${HELM_RELEASE_NAME} ./k8s/deployment \
+                        --set image.repository=${LOCAL_REGISTRY}/${DOCKER_IMAGE} \
+                        --set image.tag=${DOCKER_TAG} \
+                        --kubeconfig ${KUBECONFIG}
+                    """
                 }
             }
         }
     }
-
-    post {
-        success {
-            echo 'Deployment was successful!'
-        }
-        failure {
-            echo 'Deployment failed.'
-        }
-    }
-}
