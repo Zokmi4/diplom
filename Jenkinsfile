@@ -77,27 +77,28 @@ pipeline {
     }
 
     // Пост-обработка
-    post {
-        always {
-            script {
-                // Получаем список контейнеров для удаления
-                def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
-                
-                // Если контейнеры есть, удаляем их
-                if (containers) {
-                    sh "docker rm -f ${containers}"
-                } else {
-                    echo 'Нет контейнеров для удаления.'
-                }
-            }
+   post {
+    always {
+        script {
+            // Получаем список контейнеров для удаления
+            def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
 
-            // Отправка уведомления по email
-            emailext (
-                to: 'mazay.cod@gmail.com',
-                subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
-                body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
-                attachLog: true
-            )
+            // Проверяем, есть ли контейнеры для удаления
+            if (containers) {
+                // Удаляем контейнеры, если они есть
+                sh "docker rm -f ${containers}"
+            } else {
+                echo 'Нет контейнеров для удаления.'
+            }
         }
+
+        // Отправка уведомления по email
+        emailext (
+            to: 'mazay.cod@gmail.com',
+            subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
+            body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
+            attachLog: true
+        )
     }
 }
+
