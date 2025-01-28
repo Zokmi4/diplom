@@ -1,0 +1,20 @@
+image:
+  repository: "zokmi4/diplom" 
+  tag: "latest"
+  pullPolicy: "IfNotPresent"
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  name: ""
+  annotations: {}
+  path: /
+  host: ""
+  tls: []
+
+resources: {}
