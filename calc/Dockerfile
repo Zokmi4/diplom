@@ -5,14 +5,15 @@ FROM python:3.10
 WORKDIR /app
 COPY requirements.txt .
 
-# Устанавливаем зависимости из requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Устанавливаем python-multipart отдельно, если он отсутствует в requirements.txt
 RUN pip install python-multipart
+
+# Устанавливаем Nginx и копируем конфигурационный файл
+RUN apt-get update && apt-get install -y nginx
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Копируем файлы приложения в контейнер
 COPY . /app
 
-# Запускаем приложение
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Открываем порты и запускаем Nginx вместе с приложением
+CMD service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080
