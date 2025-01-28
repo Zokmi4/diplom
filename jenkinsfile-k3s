@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Проверка содержимого каталога
-                    sh 'ls -R .//k3s_deploy/'
+                    sh 'ls -R ./k3s_deploy/'
                 }
             }
         }
