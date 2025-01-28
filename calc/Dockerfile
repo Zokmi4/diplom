@@ -5,14 +5,14 @@ FROM python:3.10
 WORKDIR /app
 COPY requirements.txt .
 
-# Добавьте python-multipart в requirements.txt, если его нет
+# Устанавливаем зависимости из requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Или установите python-multipart прямо
+# Устанавливаем python-multipart отдельно, если он отсутствует в requirements.txt
 RUN pip install python-multipart
 
 # Копируем файлы приложения в контейнер
 COPY . /app
 
 # Запускаем приложение
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
