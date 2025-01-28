@@ -20,7 +20,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dir('test/calc/') {
+                    dir('calc/') {
                         // Выводим текущую директорию и содержимое для диагностики
                         sh 'echo "Текущая директория:"'
                         sh 'pwd'
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: '3', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
-                        dir('test/calc/') {
+                        dir('calc/') {
                             sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
                             sh "docker push zokmi4/my-fastapi-calc:latest"
                             sh "docker push zokmi4/my-fastapi-calc:${env.BUILD_ID}"
