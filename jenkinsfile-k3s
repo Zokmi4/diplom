@@ -1,0 +1,55 @@
+pipeline {
+    agent { label 'agent 3' }
+
+    environment {
+        DOCKER_IMAGE = 'zokmi4/diplom:latest'  // 
+        KUBECONFIG = credentials('k3s')  //
+    }
+
+    stages {
+        stage('Pull Docker Image') {
+            steps {
+                script {
+                    // Логинимся в Docker Hub
+                    withCredentials([usernamePassword(credentialsId: '3', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+                    }
+                    
+                    // Забираем Docker образ из Docker Hub
+                    sh "docker pull ${DOCKER_IMAGE}"
+                }
+            }
+        }
+
+        stage('Push to Local Docker Registry (Optional)') {
+            steps {
+                script {
+                    // Если нужно, пушим в локальный Docker registry перед деплоем в K3s
+                    sh "docker tag ${DOCKER_IMAGE} localhost:5000/${DOCKER_IMAGE}"
+                    sh "docker push localhost:5000/${DOCKER_IMAGE}"
+                }
+            }
+        }
+
+        stage('Deploy to K3s') {
+            steps {
+                script {
+                    // Применяем манифест Kubernetes для деплоя
+                    // Для простоты примера предполагаем, что у вас есть YAML-файл манифеста для деплоя (например, deployment.yaml)
+
+                    // Применяем deployment в K3s
+                    sh "kubectl --kubeconfig=$KUBECONFIG apply -f deployment.yaml"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment was successful!'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
