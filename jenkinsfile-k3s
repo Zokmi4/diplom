@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'zokmi4/diplom' // Имя вашего Docker образа
         HELM_RELEASE_NAME = 'diplom' // Имя Helm релиза
         DOCKER_TAG = 'latest' // Тег Docker образа
-        KUBECONFIG = '/path/to/kubeconfig' // Путь к вашему kubeconfig, если это необходимо
+        KUBECONFIG = credentials('k3s') // Использование Jenkins credentials для kubeconfig
     }
 
     stages {
@@ -67,4 +67,3 @@ pipeline {
         }
     }
 }
-
