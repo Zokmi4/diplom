@@ -66,26 +66,26 @@ docker run -d --rm -p 8080:8080 zokmi4/diplom:${env.BUILD_ID}
         }
     }
 
-    post {
-        always {
-            script {
-                // Получаем список контейнеров для удаления
-                def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
+post {
+    always {
+        script {
+            // Получаем список контейнеров для удаления
+            def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
 
-                // Проверяем, есть ли контейнеры для удаления
-                if (containers) {
-                    // Удаляем контейнеры, если они есть
-                    sh "docker rm -f ${containers}"
-                } else {
-                    echo 'Нет контейнеров для удаления.'
-                }
+            // Проверяем, есть ли контейнеры для удаления
+            if (containers) {
+                // Удаляем контейнеры, если они есть
+                sh "docker rm -f ${containers}"
+            } else {
+                echo 'Нет контейнеров для удаления.'
             }
-            emailext (
-                to: 'mazay.cod@gmail.com',
-                subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
-                body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
-                attachLog: true
-            )
         }
+        emailext (
+            to: 'mazay.cod@gmail.com',
+            subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
+            body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
+            attachLog: true
+        )
     }
+}
 }
