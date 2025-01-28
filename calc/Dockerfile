@@ -16,4 +16,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY . /app
 
 # Открываем порты и запускаем Nginx вместе с приложением
-CMD service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080
+CMD ["sh", "-c", "service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080"]
