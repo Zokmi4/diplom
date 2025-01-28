@@ -1,13 +1,8 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
 
 app = FastAPI()
-
-# Подключаем статические файлы
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 # Инициализация Jinja2
 env = Environment(loader=FileSystemLoader("templates"))
 
