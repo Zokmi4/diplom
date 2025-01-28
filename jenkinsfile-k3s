@@ -2,7 +2,7 @@ pipeline {
     agent { label 'agent 2' }
 
     environment {
-        DOCKER_IMAGE = 'zokmi4/diplom' // Замените на нужное имя вашего Docker образа
+        DOCKER_IMAGE = 'zokmi4/diplom' // Имя вашего Docker образа
         HELM_RELEASE_NAME = 'diplom' // Имя Helm релиза
         DOCKER_TAG = 'latest' // Тег Docker образа
         KUBECONFIG = '/path/to/kubeconfig' // Путь к вашему kubeconfig, если это необходимо
@@ -28,26 +28,23 @@ pipeline {
         stage('Docker Login') {
             steps {
                 script {
-                    // Логин в Docker, используя Jenkins credentials
+                    // Логин в Docker Hub
                     withCredentials([usernamePassword(credentialsId: '3', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh '''
                         echo "Logging into Docker Hub"
-                        echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+                        docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
                         '''
                     }
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Pull Docker Image') {
             steps {
                 script {
-                    // Построение и пуш Docker образа
-                    echo "Building and pushing Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    sh '''
-                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ./k3s_deploy
-                    docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-                    '''
+                    // Скачиваем Docker образ из Docker Hub
+                    echo "Pulling Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    sh "docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -55,6 +52,9 @@ pipeline {
         stage('Deploy to k3s') {
             steps {
                 script {
+                    // Проверка Helm-чарта перед деплоем
+                    sh "helm lint ./k3s_deploy"
+
                     echo "Deploying ${HELM_RELEASE_NAME} with image ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     sh """
                     helm upgrade --install ${HELM_RELEASE_NAME} './k3s_deploy' \
@@ -67,3 +67,4 @@ pipeline {
         }
     }
 }
+
