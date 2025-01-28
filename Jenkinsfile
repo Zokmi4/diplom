@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     dir('diplom/calc/') {
-                        // Выводим содержимое директории для диагностики
+                        // Выводим текущую директорию и содержимое для диагностики
                         sh 'echo "Текущая директория:"'
                         sh 'pwd'
                         sh 'echo "Содержимое директории:"'
@@ -21,8 +21,8 @@ pipeline {
                         // Проверка наличия Dockerfile
                         sh 'find . -name Dockerfile'
 
-                        // Сборка Docker-образа
-                        sh 'docker build -t zokmi4/my-fastapi-calc:latest .'
+                        // Явно указываем путь к Dockerfile и контекст сборки
+                        sh 'docker build -f Dockerfile -t zokmi4/my-fastapi-calc:latest .'
                         sh "docker tag zokmi4/my-fastapi-calc:latest zokmi4/my-fastapi-calc:${env.BUILD_ID}"
                     }
                 }
