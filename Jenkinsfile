@@ -58,7 +58,7 @@ pipeline {
                     dir('calc/') {
                         sh """
 echo "Запуск контейнера с тегом: zokmi4/diplom:${env.BUILD_ID}"
-docker run -d --rm -p 8080:8080 zokmi4/diplom:${env.BUILD_ID}
+docker run -d --rm -p 8040:8040 zokmi4/diplom:${env.BUILD_ID}
 """
                     }
                 }
@@ -69,13 +69,22 @@ docker run -d --rm -p 8080:8080 zokmi4/diplom:${env.BUILD_ID}
 post {
     always {
         script {
-            // Получаем список контейнеров для удаления
             def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
 
-            // Проверяем, есть ли контейнеры для удаления
             if (containers) {
-                // Удаляем контейнеры, если они есть
-                sh "docker rm -f ${containers}"
+                // Попробуем несколько раз удалить контейнеры
+                def maxRetries = 5
+                def retryInterval = 5
+                for (int i = 0; i < maxRetries; i++) {
+                    def removalResult = sh(script: "docker rm -f ${containers}", returnStatus: true)
+                    if (removalResult == 0) {
+                        echo "Контейнеры успешно удалены."
+                        break
+                    } else {
+                        echo "Попытка удаления контейнеров ${i + 1} не удалась. Повтор через ${retryInterval} секунд."
+                        sleep(retryInterval)
+                    }
+                }
             } else {
                 echo 'Нет контейнеров для удаления.'
             }
