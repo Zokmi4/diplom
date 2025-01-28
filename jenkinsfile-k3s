@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'agent 2' }
 
     environment {
         DOCKER_IMAGE = 'zokmi4/diplom' // Замените на нужное имя вашего Docker образа
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Проверка содержимого каталога
-                    sh 'ls -R ./k3s _deploy'
+                    sh 'ls -R ./k3s_deploy'
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
                     // Построение и пуш Docker образа
                     echo "Building and pushing Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     sh '''
-                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ./diplom/k3s _deploy
+                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ./diplom/k3s_deploy
                     docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
                     '''
                 }
@@ -55,7 +55,7 @@ pipeline {
                 script {
                     echo "Deploying ${HELM_RELEASE_NAME} with image ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     sh """
-                    helm upgrade --install ${HELM_RELEASE_NAME} './diplom/k3s _deploy' \
+                    helm upgrade --install ${HELM_RELEASE_NAME} './diplom/k3s_deploy' \
                         --set image.repository=${DOCKER_IMAGE} \
                         --set image.tag=${DOCKER_TAG} \
                         --kubeconfig ${KUBECONFIG}
