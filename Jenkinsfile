@@ -51,50 +51,16 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    dir('calc/') {
-                        sh """
-echo "Запуск контейнера с тегом: zokmi4/diplom:${env.BUILD_ID}"
-docker run -d --rm -p 8040:8040 zokmi4/diplom:${env.BUILD_ID}
-"""
-                    }
-                }
-            }
-        }
     }
 
-post {
-    always {
-        script {
-            def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
-
-            if (containers) {
-                // Попробуем несколько раз удалить контейнеры
-                def maxRetries = 5
-                def retryInterval = 5
-                for (int i = 0; i < maxRetries; i++) {
-                    def removalResult = sh(script: "docker rm -f ${containers}", returnStatus: true)
-                    if (removalResult == 0) {
-                        echo "Контейнеры успешно удалены."
-                        break
-                    } else {
-                        echo "Попытка удаления контейнеров ${i + 1} не удалась. Повтор через ${retryInterval} секунд."
-                        sleep(retryInterval)
-                    }
-                }
-            } else {
-                echo 'Нет контейнеров для удаления.'
-            }
+    post {
+        always {
+            emailext (
+                to: 'mazay.cod@gmail.com',
+                subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
+                body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
+                attachLog: true
+            )
         }
-        emailext (
-            to: 'mazay.cod@gmail.com',
-            subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
-            body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
-            attachLog: true
-        )
     }
-}
 }
