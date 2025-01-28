@@ -2,67 +2,66 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'zokmi4/diplom'  // Указываем имя Docker образа
-        DOCKER_TAG = 'latest'  // Указываем тег образа
-        KUBECONFIG = credentials('k3s')  // Учетные данные для доступа к Kubernetes
-        LOCAL_REGISTRY = 'localhost:5000'  // Локальный Docker registry
-        HELM_RELEASE_NAME = 'diplom-app'  // Имя релиза для Helm
+        DOCKER_IMAGE = 'zokmi4/diplom' // Замените на нужное имя вашего Docker образа
+        HELM_RELEASE_NAME = 'diplom' // Имя Helm релиза
+        DOCKER_TAG = 'latest' // Тег Docker образа
+        KUBECONFIG = '/path/to/kubeconfig' // Путь к вашему kubeconfig, если это необходимо
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                // Клонирование репозитория из ветки main
-                git branch: 'main', credentialsId: '2', url: 'https://github.com/Zokmi4/diplom.git'
+                // Клонирование репозитория из ветки final
+                git branch: 'final', credentialsId: '2', url: 'https://github.com/Zokmi4/diplom.git'
             }
         }
 
-        stage('Pull Docker Image') {
+        stage('Check Helm Chart Directory') {
             steps {
                 script {
-                    // Логинимся в Docker Hub
-                    withCredentials([usernamePassword(credentialsId: '3', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
-                    }
-                    
-                    // Забираем Docker образ из Docker Hub
-                    sh "docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    // Проверка содержимого каталога
+                    sh 'ls -R .//k3s_deploy/'
                 }
             }
         }
 
-        stage('Push to Local Docker Registry (Optional)') {
+        stage('Docker Login') {
             steps {
                 script {
-                    // Тегируем и пушим в локальный Docker registry перед деплоем
-                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${LOCAL_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    sh "docker push ${LOCAL_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    // Логин в Docker, если требуется
+                    sh '''
+                    echo "Logging into Docker Hub"
+                    docker login --username $DOCKER_USERNAME --password-stdin
+                    '''
                 }
             }
         }
 
-        stage('Deploy to K3s') {
+        stage('Push Docker Image') {
             steps {
                 script {
-                    echo "Deploying ${HELM_RELEASE_NAME} with image ${LOCAL_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    // Применяем Helm чарты с новым образом
+                    // Построение и пуш Docker образа
+                    echo "Building and pushing Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    sh '''
+                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ./diplom/k3s_deploy
+                    docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to k3s') {
+            steps {
+                script {
+                    echo "Deploying ${HELM_RELEASE_NAME} with image ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     sh """
-                    helm upgrade --install ${HELM_RELEASE_NAME} ./k8s/deployment \
-                        --set image.repository=${LOCAL_REGISTRY}/${DOCKER_IMAGE} \
+                    helm upgrade --install ${HELM_RELEASE_NAME} './diplom/k3s_deploy' \
+                        --set image.repository=${DOCKER_IMAGE} \
                         --set image.tag=${DOCKER_TAG} \
                         --kubeconfig ${KUBECONFIG}
                     """
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Deployment succeeded!'
-        }
-        failure {
-            echo 'Deployment failed.'
         }
     }
 }
