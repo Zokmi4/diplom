@@ -20,7 +20,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dir('diplom/calc/') {
+                    dir('test/calc/') {
                         // Выводим текущую директорию и содержимое для диагностики
                         sh 'echo "Текущая директория:"'
                         sh 'pwd'
