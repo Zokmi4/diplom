@@ -48,13 +48,18 @@ pipeline {
                 }
             }
         }
-        
-        stage('Delete Existing Pods') {
+
+        stage('Delete Specific Pods') {
             steps {
                 script {
-                    // Удаление текущих подов
-                    echo "Deleting existing pods for release: ${HELM_RELEASE_NAME}"
-                    sh "kubectl delete pods -l app=${HELM_RELEASE_NAME} --kubeconfig ${KUBECONFIG}"
+                    withCredentials([file(credentialsId: 'k3s', variable: 'KUBECONFIG_CONTENTS')]) {
+                        echo "Deleting specific pods for release: ${HELM_RELEASE_NAME}"
+                        sh '''
+                        echo "$KUBECONFIG_CONTENTS" > kubeconfig
+                        pod_name=$(kubectl get pods --kubeconfig=kubeconfig --selector=app=${HELM_RELEASE_NAME} -o jsonpath="{.items[0].metadata.name}")
+                        kubectl delete pod ${pod_name} --kubeconfig=kubeconfig
+                        '''
+                    }
                 }
             }
         }
@@ -66,12 +71,13 @@ pipeline {
                     sh "helm lint ./diplom"
 
                     echo "Deploying ${HELM_RELEASE_NAME} with image ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    sh """
+                    sh '''
+                    echo "$KUBECONFIG_CONTENTS" > kubeconfig
                     helm upgrade --install ${HELM_RELEASE_NAME} './diplom' \
                         --set image.repository=${DOCKER_IMAGE} \
                         --set image.tag=${DOCKER_TAG} \
-                        --kubeconfig ${KUBECONFIG}
-                    """
+                        --kubeconfig kubeconfig
+                    '''
                 }
             }
         }
@@ -83,14 +89,14 @@ pipeline {
                     def helmCharts = sh(script: "find . -name Chart.yaml -exec dirname {} \\;", returnStdout: true).trim().split("\n")
                     helmCharts.each { chart ->
                         echo "Updating Helm Chart in ${chart}"
-                        sh """
+                        sh '''
+                        echo "$KUBECONFIG_CONTENTS" > kubeconfig
                         helm dependency update ${chart}
-                        helm upgrade --install ${chart.split('/').last()} ${chart} --kubeconfig ${KUBECONFIG}
-                        """
+                        helm upgrade --install ${chart.split('/').last()} ${chart} --kubeconfig kubeconfig
+                        '''
                     }
                 }
             }
         }
     }
 }
-
