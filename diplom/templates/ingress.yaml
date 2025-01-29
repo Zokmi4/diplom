@@ -1,30 +1,19 @@
-{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "diplom.fullname" . }}
-  labels:
-    {{- include "diplom.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  name: my-app-ingress
   annotations:
-    {{- toYaml . | nindent 4 | trim | nindent 2 }}
-  {{- end }}
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirectscheme@kubernetescrd
 spec:
   rules:
-    - host: {{ .Values.ingress.host }}
-      http:
-        paths:
-          - path: {{ .Values.ingress.path }}
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ include "diplom.fullname" . }}
-                port:
-                  number: {{ .Values.service.port }}
-  {{- if .Values.ingress.tls }}
-  tls:
-    - hosts:
-      - {{ .Values.ingress.host }}
-      secretName: {{ include "diplom.fullname" . }}-tls
-  {{- end }}
-{{- end -}}
+  - host: myapp.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-app-service
+            port:
+              number: 80
