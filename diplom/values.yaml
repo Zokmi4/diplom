@@ -15,7 +15,7 @@ resources: {}
 ingress:
   enabled: true
   annotations: {} 
-  host: diplom.local
+  host: 34.134.198.174.nip.io
   path: /
   tls: []
   
