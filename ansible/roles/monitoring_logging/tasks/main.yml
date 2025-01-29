@@ -1,19 +1,15 @@
 ---
-- name: Install necessary packages
-  ansible.builtin.package:
-    name: 
-      - docker
-      - docker-compose
-      - python3-pip
-    state: present
+- name: Include Prometheus installation tasks
+  include_tasks: install_prometheus.yml
 
-- name: Start Docker service
-  ansible.builtin.service:
-    name: docker
-    state: started
-    enabled: true
+- name: Include Elasticsearch installation tasks
+  include_tasks: install_elasticsearch.yml
 
-- name: Install Docker SDK for Python
-  ansible.builtin.pip:
-    name: docker
-    
+- name: Include Logstash installation tasks
+  include_tasks: install_logstash.yml
+
+- name: Include Kibana installation tasks
+  include_tasks: install_kibana.yml
+
+- name: Include Docker exporter installation tasks
+  include_tasks: install_docker_exporters.yml
