@@ -5,20 +5,21 @@
   become: true
   roles:
     - docker
-    - ssh_key  
+      
    
 - name: Install Docker and Docker Compose on prod
   hosts: gcp_prod
   become: true
   roles:
     - docker
-    - ssh_key  
+    
   
 - name: Install k3s on prod
   hosts: gcp_prod
   become: true
   roles:
     - k3s
+    - docker
    
 - name: Install Jenkins and necessary dependencies on test server
   hosts: gcp_test
