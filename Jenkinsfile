@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     dir('calc/') {
-                        // Выводим текущую директорию и содержимое для диагностики
+                        // Использование bash для выполнения команд
                         sh 'echo "Текущая директория:"'
                         sh 'pwd'
                         sh 'echo "Содержимое директории:"'
@@ -43,6 +43,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: '3', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         dir('calc/') {
+                            // Использование bash для выполнения команд
                             sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
                             sh "docker push zokmi4/fastapi:latest"
                             sh "docker push zokmi4/fastapi:${env.BUILD_ID}"
@@ -52,7 +53,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             script {
