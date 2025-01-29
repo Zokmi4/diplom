@@ -1,13 +1,29 @@
 {{/*
-Expand the name of the chart.
+Generate the fullname of the release.
 */}}
 {{- define "k3s_deploy.fullname" -}}
-{{- include "k3s_deploy.name" . }}-{{ .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Expand the name of the chart.
+Generate a standard name for the chart.
 */}}
 {{- define "k3s_deploy.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- .Chart.Name -}}
+{{- end -}}
+
+{{/*
+Generate labels for the chart.
+*/}}
+{{- define "k3s_deploy.labels" -}}
+app.kubernetes.io/name: {{ include "k3s_deploy.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Generate selector labels for the chart.
+*/}}
+{{- define "k3s_deploy.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "k3s_deploy.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
