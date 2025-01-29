@@ -9,7 +9,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: 8000
+      targetPort: 8080
       nodePort: {{ .Values.service.nodePort }}
   selector:
     app.kubernetes.io/name: {{ include "diplom.name" . }}
