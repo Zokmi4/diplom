@@ -48,6 +48,16 @@ pipeline {
                 }
             }
         }
+        
+        stage('Delete Existing Pods') {
+            steps {
+                script {
+                    // Удаление текущих подов
+                    echo "Deleting existing pods for release: ${HELM_RELEASE_NAME}"
+                    sh "kubectl delete pods -l app=${HELM_RELEASE_NAME} --kubeconfig ${KUBECONFIG}"
+                }
+            }
+        }
 
         stage('Deploy to k3s') {
             steps {
@@ -83,3 +93,4 @@ pipeline {
         }
     }
 }
+
