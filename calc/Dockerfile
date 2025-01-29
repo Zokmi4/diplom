@@ -1,11 +1,14 @@
 FROM python:3.10
-WORKDIR /app
 
+WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install python-multipart
 
 COPY . /app
 
+
 EXPOSE 8000
 
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8080"]
+# Запускаем Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
