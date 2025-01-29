@@ -31,8 +31,8 @@ pipeline {
                         sh 'find . -name Dockerfile'
 
                         // Явно указываем путь к Dockerfile и контекст сборки
-                        sh 'docker build -f Dockerfile -t fastapi:latest .'
-                        sh "docker tag fastapi:latest fastapi:${env.BUILD_ID}"
+                        sh 'docker build -f Dockerfile -t zokmi4/fastapi:latest .'
+                        sh 'docker tag zokmi4/fastapi:latest zokmi4/fastapi:${env.BUILD_ID}'
                     }
                 }
             }
@@ -52,7 +52,8 @@ pipeline {
             }
         }
     }
-post {
+    
+    post {
         always {
             script {
                 // Получение списка контейнеров для удаления
