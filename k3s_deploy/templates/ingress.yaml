@@ -1,10 +1,14 @@
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "k3s_deploy.fullname" . }}
+  labels:
+    {{- include "k3s_deploy.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 | trim | nindent 2 }}
+  {{- end }}
 spec:
   rules:
     - host: {{ .Values.ingress.host }}
@@ -14,13 +18,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}
+                name: {{ include "k3s_deploy.fullname" . }}
                 port:
-                  number: 80
+                  number: {{ .Values.service.port }}
   {{- if .Values.ingress.tls }}
   tls:
     - hosts:
-        - {{ .Values.ingress.host }}
-      secretName: {{ .Release.Name }}-tls
+      - {{ .Values.ingress.host }}
+      secretName: {{ include "k3s_deploy.fullname" . }}-tls
   {{- end }}
-{{- end }}
+{{- end -}}
