@@ -45,13 +45,13 @@
     timeout: 300
     state: started
 
-- name: Read Jenkins initial admin password
-  slurp:
-    src: /var/lib/jenkins/secrets/initialAdminPassword
-  register: jenkins_password_raw
-  when: "'gcp_test' in group_names"  # Проверяем, что хост в группе gcp_test
+#- name: Read Jenkins initial admin password
+ # slurp:
+  #  src: /var/lib/jenkins/secrets/initialAdminPassword
+  #register: jenkins_password_raw
+  #when: "'gcp_test' in group_names"  # Проверяем, что хост в группе gcp_test
 
-- name: Show Jenkins initial admin password
-  debug:
-    msg: "The Jenkins initial admin password is: {{ jenkins_password_raw.content | b64decode }}"
-  when: "'gcp_test' in group_names"  # Проверяем, что хост в группе gcp_test
+#- name: Show Jenkins initial admin password
+ # debug:
+  #  msg: "The Jenkins initial admin password is: {{ jenkins_password_raw.content | b64decode }}"
+  #when: "'gcp_test' in group_names"  # Проверяем, что хост в группе gcp_test
