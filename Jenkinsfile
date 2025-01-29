@@ -31,8 +31,8 @@ pipeline {
                         sh 'find . -name Dockerfile'
 
                         // Явно указываем путь к Dockerfile и контекст сборки
-                        sh 'docker build -f Dockerfile -t zokmi4/diplom:latest .'
-                        sh "docker tag zokmi4/diplom:latest zokmi4/diplom:${env.BUILD_ID}"
+                        sh 'docker build -f Dockerfile -t fastapi:latest .'
+                        sh "docker tag zokmi4/diplom:latest fastapi:${env.BUILD_ID}"
                     }
                 }
             }
@@ -44,8 +44,8 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: '3', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         dir('calc/') {
                             sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
-                            sh "docker push zokmi4/diplom:latest"
-                            sh "docker push zokmi4/diplom:${env.BUILD_ID}"
+                            sh "docker push fastapi:latest"
+                            sh "docker push fastapi:${env.BUILD_ID}"
                         }
                     }
                 }
