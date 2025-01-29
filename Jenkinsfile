@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     dir('calc/') {
-                        // Использование bash для выполнения команд
+                        // Выводим текущую директорию и содержимое для диагностики
                         sh 'echo "Текущая директория:"'
                         sh 'pwd'
                         sh 'echo "Содержимое директории:"'
@@ -31,8 +31,8 @@ pipeline {
                         sh 'find . -name Dockerfile'
 
                         // Явно указываем путь к Dockerfile и контекст сборки
-                        sh 'docker build -f Dockerfile -t zokmi4/fastapi:latest .'
-                        sh 'docker tag zokmi4/fastapi:latest zokmi4/fastapi:${env.BUILD_ID}'
+                        sh 'docker build -f Dockerfile -t zokmi4/diplom:latest .'
+                        sh "docker tag zokmi4/diplom:latest zokmi4/diplom:${env.BUILD_ID}"
                     }
                 }
             }
@@ -43,18 +43,16 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: '3', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         dir('calc/') {
-                            // Использование bash для выполнения команд
                             sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
-                            sh "docker push zokmi4/fastapi:latest"
-                            sh "docker push zokmi4/fastapi:${env.BUILD_ID}"
+                            sh "docker push zokmi4/diplom:latest"
+                            sh "docker push zokmi4/diplom:${env.BUILD_ID}"
                         }
                     }
                 }
             }
         }
     }
-
-    post {
+post {
         always {
             script {
                 // Получение списка контейнеров для удаления
@@ -73,4 +71,3 @@ pipeline {
             )
         }
     }
-}
