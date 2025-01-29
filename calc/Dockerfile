@@ -17,4 +17,4 @@ COPY dhparam.pem /etc/ssl/certs/
 EXPOSE 80
 EXPOSE 443
 
-CMD ["sh", "-c", "service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080"]
+CMD ["sh", "-c", "service nginx start && uvicorn main:app --host 34.134.198.174 --port 8080"]
