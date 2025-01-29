@@ -1,0 +1,12 @@
+---
+- name: Install NGINX exporter
+  shell: |
+    docker run -d \
+      --name nginx-prometheus-exporter \
+      -p 9113:9113 nginx/nginx-prometheus-exporter:latest
+
+- name: Install Apache exporter
+  shell: |
+    docker run -d \
+      --name apache-prometheus-exporter \
+      -p 9117:9117 prom/apache-exporter:latest

@@ -1,0 +1,6 @@
+---
+# Default values for variables
+prometheus_version: "latest"
+elasticsearch_version: "7.10.2"
+logstash_version: "7.10.2"
+kibana_version: "7.10.2"

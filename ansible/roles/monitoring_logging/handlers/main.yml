@@ -1,0 +1,21 @@
+---
+# Handlers to notify
+- name: Restart Prometheus
+  ansible.builtin.service:
+    name: prometheus
+    state: restarted
+
+- name: Restart Elasticsearch
+  ansible.builtin.service:
+    name: elasticsearch
+    state: restarted
+
+- name: Restart Logstash
+  ansible.builtin.service:
+    name: logstash
+    state: restarted
+
+- name: Restart Kibana
+  ansible.builtin.service:
+    name: kibana
+    state: restarted
