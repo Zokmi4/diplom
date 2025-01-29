@@ -44,8 +44,8 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: '3', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         dir('calc/') {
                             sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
-                            sh "docker push fastapi:latest"
-                            sh "docker push fastapi:${env.BUILD_ID}"
+                            sh "docker push zokmi4/fastapi:latest"
+                            sh "docker push zokmi4/fastapi:${env.BUILD_ID}"
                         }
                     }
                 }
