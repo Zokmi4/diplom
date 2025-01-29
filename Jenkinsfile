@@ -32,7 +32,7 @@ pipeline {
 
                         // Явно указываем путь к Dockerfile и контекст сборки
                         sh 'docker build -f Dockerfile -t fastapi:latest .'
-                        sh "docker tag zokmi4/diplom:latest fastapi:${env.BUILD_ID}"
+                        sh "docker tag fastapi:latest fastapi:${env.BUILD_ID}"
                     }
                 }
             }
