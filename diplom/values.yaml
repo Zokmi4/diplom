@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: zokmi4/diplom
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 8000
+  nodePort: 32222
+resources: {}
+
+ingress:
+  enabled: true
+  annotations: {} 
+  host: diplom.local
+  path: /
+  tls: []
+  
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
