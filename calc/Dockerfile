@@ -10,4 +10,4 @@ COPY . /app
 EXPOSE 8080
 
 # Запускаем Uvicorn
-CMD ["uvicorn", "main:app", "--host", "34.134.198.174", "--port", "8080"]
+CMD ["uvicorn", "main:app", "--host", "10.128.0.23", "--port", "8080"]
