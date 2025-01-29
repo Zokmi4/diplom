@@ -49,21 +49,6 @@ pipeline {
             }
         }
 
-        stage('Delete Specific Pods') {
-            steps {
-                script {
-                    withCredentials([file(credentialsId: 'k3s', variable: 'KUBECONFIG_CONTENTS')]) {
-                        echo "Deleting specific pods for release: ${HELM_RELEASE_NAME}"
-                        sh '''
-                        echo "$KUBECONFIG_CONTENTS" > kubeconfig
-                        pod_name=$(kubectl get pods --kubeconfig=kubeconfig --selector=app=${HELM_RELEASE_NAME} -o jsonpath="{.items[0].metadata.name}")
-                        kubectl delete pod ${pod_name} --kubeconfig=kubeconfig
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('Deploy to k3s') {
             steps {
                 script {
@@ -71,13 +56,12 @@ pipeline {
                     sh "helm lint ./diplom"
 
                     echo "Deploying ${HELM_RELEASE_NAME} with image ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    sh '''
-                    echo "$KUBECONFIG_CONTENTS" > kubeconfig
+                    sh """
                     helm upgrade --install ${HELM_RELEASE_NAME} './diplom' \
                         --set image.repository=${DOCKER_IMAGE} \
                         --set image.tag=${DOCKER_TAG} \
-                        --kubeconfig kubeconfig
-                    '''
+                        --kubeconfig ${KUBECONFIG}
+                    """
                 }
             }
         }
@@ -89,11 +73,10 @@ pipeline {
                     def helmCharts = sh(script: "find . -name Chart.yaml -exec dirname {} \\;", returnStdout: true).trim().split("\n")
                     helmCharts.each { chart ->
                         echo "Updating Helm Chart in ${chart}"
-                        sh '''
-                        echo "$KUBECONFIG_CONTENTS" > kubeconfig
+                        sh """
                         helm dependency update ${chart}
-                        helm upgrade --install ${chart.split('/').last()} ${chart} --kubeconfig kubeconfig
-                        '''
+                        helm upgrade --install ${chart.split('/').last()} ${chart} --kubeconfig ${KUBECONFIG}
+                        """
                     }
                 }
             }
