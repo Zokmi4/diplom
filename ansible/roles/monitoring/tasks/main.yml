@@ -2,14 +2,14 @@
 - name: Create Prometheus config directory with sudo
   become: true
   file:
-    path: /opt/prometheus
+    path: /ets/prometheus
     state: directory
     mode: '0755'
 
 - name: Copy Prometheus configuration
   template:
     src: prometheus.yml.j2
-    dest: /opt/prometheus/prometheus.yml
+    dest: /ets/prometheus/prometheus.yml
   become: true
 
 - name: Deploy Prometheus
@@ -17,7 +17,7 @@
     name: prometheus
     image: prom/prometheus:latest
     volumes:
-      - /opt/prometheus:/etc/prometheus
+      - /ets/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
