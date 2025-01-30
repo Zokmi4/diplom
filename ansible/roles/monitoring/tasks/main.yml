@@ -1,4 +1,10 @@
 ---
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+  become: true
+
 - name: Ensure Docker service is running
   service:
     name: docker
@@ -10,6 +16,13 @@
   docker_network:
     name: monitoring
     state: present
+
+- name: Copy prometheus.yml to target hosts
+  copy:
+    src: /home/zokmi4/diplom/ansible/roles/monitoring/prometheus.yml
+    dest: /monitoring/prometheus.yml
+  become: true
+
 - name: Run Prometheus container
   docker_container:
     name: prometheus
@@ -19,7 +32,7 @@
     ports:
       - "9090:9090"
     volumes:
-      - /home/zokmi4/diplom/ansible/roles/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - name: monitoring
 
