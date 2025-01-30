@@ -1,0 +1,27 @@
+---
+- name: Запуск контейнера Grafana
+  docker_container:
+    name: grafana
+    image: grafana/grafana:{{ grafana_version }}
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    state: started
+    restart_policy: always
+
+- name: Добавить источник данных Loki в Grafana
+  uri:
+    url: "http://localhost:3000/api/datasources"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body: |
+      {
+        "name": "Loki",
+        "type": "loki",
+        "url": "http://loki:3100",
+        "access": "proxy",
+        "isDefault": true
+      }
+    status_code: 200

@@ -1,0 +1,5 @@
+prometheus_config_dir: "/opt/monitoring/config"
+grafana_config_dir: "/opt/monitoring/config"
+alertmanager_config_dir: "/opt/monitoring/config"
+rsyslog_config_dir: "/opt/monitoring/config"
+loki_config_dir: "/opt/monitoring/config"

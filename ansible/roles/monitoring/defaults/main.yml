@@ -1,0 +1,5 @@
+prometheus_version: "2.30.0"
+grafana_version: "8.5.2"
+alertmanager_version: "0.23.0"
+loki_version: "2.6.1"
+gcp_dev_ip: "34.56.209.145"  
