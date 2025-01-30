@@ -1,6 +1,6 @@
 ---
-- name: Настройка мониторинга и логирования с Docker
-  hosts: all
+- hosts: all
   become: true
   roles:
     - monitoring
+    - rsyslog
