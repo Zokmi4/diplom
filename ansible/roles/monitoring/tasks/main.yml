@@ -30,7 +30,7 @@
     dest: /monitoring/prometheus.yml
   become: true
 
-- name: Verify /monitoring/prometheus.yml is a file
+- name: Ensure /monitoring/prometheus.yml is a file
   stat:
     path: /monitoring/prometheus.yml
   register: prometheus_file
@@ -74,4 +74,3 @@
       - "3100:3100"
     networks:
       - name: monitoring
-
