@@ -20,9 +20,10 @@
     ports:
       - "9090:9090"
     volumes:
-      - /home/zokmi4/diplom/ansible/roles/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - name: monitoring
+
 
 - name: Run Grafana container
   docker_container:
