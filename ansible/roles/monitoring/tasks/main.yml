@@ -30,6 +30,16 @@
     dest: /monitoring/prometheus.yml
   become: true
 
+- name: Verify /monitoring/prometheus.yml is a file
+  stat:
+    path: /monitoring/prometheus.yml
+  register: prometheus_file
+
+- name: Fail if /monitoring/prometheus.yml is not a file
+  fail:
+    msg: "/monitoring/prometheus.yml is not a file"
+  when: prometheus_file.stat.isreg is not defined or not prometheus_file.stat.isreg
+
 - name: Run Prometheus container
   docker_container:
     name: prometheus
@@ -64,3 +74,4 @@
       - "3100:3100"
     networks:
       - name: monitoring
+
