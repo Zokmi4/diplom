@@ -1,0 +1,7 @@
+prometheus_version: "2.30.3"
+grafana_version: "8.5.2"
+rsyslog_version: "8.2101.0-1"
+prometheus_port: 9090
+grafana_port: 3000
+rsyslog_port: 514
+dev_machine_ip: "34.56.209.145"  

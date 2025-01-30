@@ -1,0 +1,4 @@
+- include_tasks: install_prometheus.yml
+- include_tasks: install_grafana.yml
+- include_tasks: install_rsyslog.yml
+- include_tasks: configure_docker.yml
