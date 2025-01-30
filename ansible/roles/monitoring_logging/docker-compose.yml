@@ -1,24 +1,6 @@
 version: '3'
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.10.1
-    container_name: logstash
-    ports:
-      - "5044:5044"
-      - "9600:9600"
-    volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-
-  prometheus:
+    prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
