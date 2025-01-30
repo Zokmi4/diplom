@@ -12,7 +12,7 @@
   become: true
   roles:
     - docker
-    - monitoring_logging
+    
   
 - name: Install k3s on prod
   hosts: gcp_prod
@@ -20,7 +20,7 @@
   roles:
     - k3s
     - docker
-    - monitoring_logging
+   
 
 - name: Install Jenkins and necessary dependencies on test server
   hosts: gcp_test
@@ -30,4 +30,4 @@
   roles:
     - jenkins
     - docker 
-    - monitoring_logging
+    

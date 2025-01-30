@@ -12,17 +12,3 @@
     name: docker
     state: started
     enabled: true
-
-- name: Ensure Python venv and pipx are installed
-  ansible.builtin.package:
-    name: 
-      - python3-venv
-      - pipx
-    state: present
-
-- name: Create a virtual environment
-  ansible.builtin.command: python3 -m venv /opt/ansible_venv
-
-- name: Install Docker SDK for Python in virtual environment
-  ansible.builtin.command: /opt/ansible_venv/bin/pip install docker
-
