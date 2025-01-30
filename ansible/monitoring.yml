@@ -1,6 +1,5 @@
 ---
-- hosts: all
-  become: true
+- hosts: gcp_dev, gcp_prod, gcp_test
+  become: yes
   roles:
     - monitoring
-    - rsyslog
