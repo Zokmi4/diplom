@@ -1,5 +1,5 @@
 ---
-- name: Setup Prometheus, Loki, and ELK
+- name: Setup Prometheus, Rsyslog, and Grafana
   hosts: gcp_dev, gcp_prod, gcp_test
   become: true
   tasks:
@@ -9,32 +9,73 @@
         state: started
         enabled: true
 
-- name: Deploy Grafana and leading Kibana only on gcp_dev
+    - name: Create monitoring stack directory
+      file:
+        path: /home/{{ ansible_user }}/diplom/monitoring-stack
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Copy Docker Compose file for dev
+      copy:
+        src: roles/monitoring_logging/docker-compose-dev.yml
+        dest: /home/{{ ansible_user }}/diplom/monitoring-stack/docker-compose-dev.yml
+        mode: "0644"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Copy Docker Compose file for prod
+      copy:
+        src: roles/monitoring_logging/docker-compose-prod.yml
+        dest: /home/{{ ansible_user }}/diplom/monitoring-stack/docker-compose-prod.yml
+        mode: "0644"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+- name: Deploy Prometheus, Grafana, and Rsyslog only on gcp_dev
   hosts: gcp_dev
   become: true
   tasks:
-    - name: Deploy Prometheus, Grafana, Loki, and ELK
+    - name: Deploy Prometheus and Grafana
       shell: |
         docker-compose -f /home/{{ ansible_user }}/diplom/monitoring-stack/docker-compose-dev.yml up -d
       args:
         chdir: /home/{{ ansible_user }}/diplom/monitoring-stack
 
+    - name: Install Rsyslog
+      apt:
+        name: rsyslog
+        state: present
+
+    - name: Configure Rsyslog
+      copy:
+        src: /monitoring_logging/rsyslog/rsyslog.conf
+        dest: /etc/rsyslog.conf
+      notify:
+        - Restart rsyslog
+
+    - name: Restart Rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+
     - name: Copy Grafana provisioning files
       copy:
         src: /monitoring_logging/grafana/provisioning/
         dest: /home/{{ ansible_user }}/diplom/monitoring-stack/grafana/provisioning/
-        mode: 0755
-        owner: {{ ansible_user }}
-        group: {{ ansible_user }}
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         recurse: yes
 
     - name: Copy Grafana dashboards
       copy:
         src: /path/to/grafana/dashboards/
         dest: /home/{{ ansible_user }}/diplom/monitoring-stack/grafana/dashboards/
-        mode: 0755
-        owner: {{ ansible_user }}
-        group: {{ ansible_user }}
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         recurse: yes
 
 - name: Install Filebeat on all machines
