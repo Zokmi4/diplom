@@ -1,0 +1,47 @@
+---
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+
+- name: Create Docker network
+  docker_network:
+    name: monitoring
+    state: present
+
+- name: Run Prometheus container
+  docker_container:
+    name: prometheus
+    image: prom/prometheus
+    state: started
+    restart_policy: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - /monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - name: monitoring
+
+- name: Run Grafana container
+  docker_container:
+    name: grafana
+    image: grafana/grafana
+    state: started
+    restart_policy: always
+    ports:
+      - "3000:3000"
+    networks:
+      - name: monitoring
+
+- name: Run Loki container
+  docker_container:
+    name: loki
+    image: grafana/loki
+    state: started
+    restart_policy: always
+    ports:
+      - "3100:3100"
+    networks:
+      - name: monitoring
