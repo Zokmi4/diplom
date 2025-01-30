@@ -1,5 +1,6 @@
 ---
-- name: Create Prometheus config directory
+- name: Create Prometheus config directory with sudo
+  become: true
   file:
     path: /opt/prometheus
     state: directory
@@ -9,6 +10,7 @@
   template:
     src: prometheus.yml.j2
     dest: /opt/prometheus/prometheus.yml
+  become: true
 
 - name: Deploy Prometheus
   docker_container:
@@ -40,6 +42,7 @@
   template:
     src: rsyslog.conf.j2
     dest: /etc/rsyslog.d/rsyslog.conf
+  become: true
 
 - name: Deploy rsyslog
   docker_container:
@@ -51,4 +54,3 @@
     volumes:
       - /etc/rsyslog.d:/etc/rsyslog.d
       - rsyslog_data:/var/log
-
