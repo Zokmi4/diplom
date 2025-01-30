@@ -17,6 +17,13 @@
     name: monitoring
     state: present
 
+- name: Create /monitoring directory
+  file:
+    path: /monitoring
+    state: directory
+    mode: '0755'
+  become: true
+
 - name: Create prometheus.yml from template
   template:
     src: prometheus.yml.j2
