@@ -1,0 +1,28 @@
+---
+- name: Убедиться, что сервис Docker запущен
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Настроить Docker Compose для дев
+  copy:
+    src: docker-compose.yml
+    dest: /opt/docker-compose/docker-compose.yml
+
+- name: Настроить Prometheus и Grafana на дев машине
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'prometheus.yml.j2', dest: '/opt/docker-compose/prometheus.yml' }
+    - { src: 'grafana.ini.j2', dest: '/opt/docker-compose/grafana.ini' }
+
+- name: Запустить Docker Compose на дев машине
+  command: docker-compose up -d
+  args:
+    chdir: /opt/docker-compose
+
+- name: Подождать, пока сервисы запустятся на дев машине
+  wait_for:
+    timeout: 30
