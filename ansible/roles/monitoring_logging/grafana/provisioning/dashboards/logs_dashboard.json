@@ -1,0 +1,28 @@
+{
+    "id": null,
+    "title": "Logs Dashboard",
+    "tags": [],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "10s",
+    "panels": [
+      {
+        "type": "table",
+        "title": "Log Messages",
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "{job=\"logstash\"}"
+          }
+        ],
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 9
+        }
+      }
+    ]
+  }
+  
