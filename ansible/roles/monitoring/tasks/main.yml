@@ -20,7 +20,7 @@
     ports:
       - "9090:9090"
     volumes:
-      - /monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/zokmi4/diplom/ansible/roles/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - name: monitoring
 
