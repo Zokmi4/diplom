@@ -1,5 +1,27 @@
 ---
-- hosts: gcp_dev, gcp_prod, gcp_test
-  become: yes
+- hosts: gcp_dev
   roles:
-    - monitoring
+    - role: monitoring
+  vars:
+    host1: "34.56.209.145"
+    host2: "34.41.24.58"
+    host3: "34.134.198.174"
+    leader_host: "34.134.198.174"
+
+- hosts: gcp_prod
+  roles:
+    - role: monitoring
+  vars:
+    host1: "34.56.209.145"
+    host2: "34.41.24.58"
+    host3: "34.134.198.174"
+    leader_host: "34.134.198.174"
+
+- hosts: gcp_test
+  roles:
+    - role: monitoring
+  vars:
+    host1: "34.56.209.145"
+    host2: "34.41.24.58"
+    host3: "34.134.198.174"
+    leader_host: "34.134.198.174"

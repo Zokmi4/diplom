@@ -1,4 +1,47 @@
-- include_tasks: install_prometheus.yml
-- include_tasks: install_grafana.yml
-- include_tasks: install_rsyslog.yml
-- include_tasks: configure_docker.yml
+---
+- name: Copy Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus/prometheus.yml
+
+- name: Deploy Prometheus
+  docker_container:
+    name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - /opt/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+- name: Deploy Grafana
+  docker_container:
+    name: grafana
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    env:
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+    networks:
+      - monitoring
+
+- name: Copy rsyslog configuration
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.d/rsyslog.conf
+
+- name: Deploy rsyslog
+  docker_container:
+    name: rsyslog
+    image: adubkov/rsyslog
+    ports:
+      - "514:514"
+      - "514:514/udp"
+    volumes:
+      - /etc/rsyslog.d:/etc/rsyslog.d
+      - rsyslog_data:/var/log
