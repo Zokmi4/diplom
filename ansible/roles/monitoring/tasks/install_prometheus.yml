@@ -1,21 +1,20 @@
 # tasks/install_prometheus.yml
-- name: Pull Prometheus Docker image
-  docker_image:
-    name: prom/prometheus
-    tag: "{{ prometheus_version }}"
-    source: pull
-
-- name: Create directory for Prometheus configuration in container
+- name: Run Prometheus container
   docker_container:
     name: prometheus
     image: prom/prometheus:{{ prometheus_version }}
-    command: /bin/bash -c "mkdir -p /etc/prometheus"
     state: started
     restart_policy: always
     exposed_ports:
       - "{{ prometheus_port }}"
     published_ports:
       - "{{ prometheus_port }}:{{ prometheus_port }}"
+    volumes:
+      - "/etc/prometheus:/etc/prometheus"
+      - "/var/lib/prometheus:/var/lib/prometheus"
+    env:
+      PROMETHEUS_WEB_LISTEN_ADDR: "0.0.0.0:{{ prometheus_port }}"
+
     volumes:
       - "/etc/prometheus:/etc/prometheus"
       - "/var/lib/prometheus:/var/lib/prometheus"
