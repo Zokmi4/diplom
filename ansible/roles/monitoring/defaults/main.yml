@@ -1,6 +1,6 @@
-prometheus_version: "2.30.3"
-grafana_version: "8.5.2"
-rsyslog_version: "8.2101.0-1"
+prometheus_version: "latest"
+grafana_version: "latest"
+rsyslog_version: "latest"
 prometheus_port: 9090
 grafana_port: 3000
 rsyslog_port: 514
