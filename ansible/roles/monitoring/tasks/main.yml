@@ -17,9 +17,9 @@
     name: monitoring
     state: present
 
-- name: Copy prometheus.yml to target hosts
-  copy:
-    src: /home/zokmi4/diplom/ansible/roles/monitoring/prometheus.yml
+- name: Create prometheus.yml from template
+  template:
+    src: prometheus.yml.j2
     dest: /monitoring/prometheus.yml
   become: true
 
