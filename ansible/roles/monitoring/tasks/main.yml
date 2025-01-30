@@ -10,7 +10,6 @@
   docker_network:
     name: monitoring
     state: present
-
 - name: Run Prometheus container
   docker_container:
     name: prometheus
@@ -20,10 +19,9 @@
     ports:
       - "9090:9090"
     volumes:
-      - /monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /home/zokmi4/diplom/ansible/roles/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - name: monitoring
-
 
 - name: Run Grafana container
   docker_container:
