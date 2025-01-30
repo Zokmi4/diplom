@@ -1,4 +1,10 @@
 ---
+- name: Create Prometheus config directory
+  file:
+    path: /opt/prometheus
+    state: directory
+    mode: '0755'
+
 - name: Copy Prometheus configuration
   template:
     src: prometheus.yml.j2
@@ -45,3 +51,4 @@
     volumes:
       - /etc/rsyslog.d:/etc/rsyslog.d
       - rsyslog_data:/var/log
+
