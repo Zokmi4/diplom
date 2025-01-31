@@ -51,4 +51,38 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Запускаем контейнер с меткой
+                    sh 'docker run -d --name zokmi4_diplom_${env.BUILD_ID} zokmi4/diplom:${env.BUILD_ID}'
+                }
+            }
+        }
     }
+
+    post {
+        always {
+            script {
+                try {
+                    // Удаляем только контейнер с меткой
+                    def containerId = sh(script: 'docker ps -aqf "name=zokmi4_diplom_${env.BUILD_ID}"', returnStdout: true).trim()
+                    if (containerId) {
+                        sh "docker rm -f ${containerId}"
+                    } else {
+                        echo 'Контейнер для удаления не найден.'
+                    }
+                } catch (Exception e) {
+                    echo "Error during cleanup: ${e.message}"
+                }
+            }
+            emailext (
+                to: 'mazay.cod@gmail.com',
+                subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
+                body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
+                attachLog: true
+            )
+        }
+    }
+}
