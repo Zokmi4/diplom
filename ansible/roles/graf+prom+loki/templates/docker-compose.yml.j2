@@ -19,13 +19,8 @@ services:
   loki:
     image: grafana/loki:latest
     volumes:
-      - /etc/docker-compose/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - /etc/docker-compose/loki-config.yml:/etc/loki/loki-config.yaml:ro
     ports:
       - "3100:3100"
     restart: always
 
-  node-exporter:
-    image: prom/node-exporter:latest
-    ports:
-      - "9100:9100"
-    restart: always

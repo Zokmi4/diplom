@@ -1,0 +1,6 @@
+---
+- name: Установить rsyslog
+  apt:
+    name: rsyslog
+    state: present
+  become: true

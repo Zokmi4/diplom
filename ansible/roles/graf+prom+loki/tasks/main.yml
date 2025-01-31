@@ -1,0 +1,60 @@
+---
+- name: Ensure Docker is installed
+  apt:
+    name: docker.io
+    state: present
+  become: true
+
+- name: Ensure Docker Compose is installed
+  apt:
+    name: docker-compose
+    state: present
+  become: true
+
+- name: Clean Docker Compose directory
+  file:
+    path: /etc/docker-compose
+    state: absent
+  become: true
+
+- name: Recreate Docker Compose directory
+  file:
+    path: /etc/docker-compose/grafana
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Create Prometheus config file
+  template:
+    src: templates/prometheus.yml.j2
+    dest: /etc/docker-compose/prometheus.yml
+    mode: '0644'
+  become: true
+
+- name: Create Loki config file
+  template:
+    src: templates/loki-config.yml.j2
+    dest: /etc/docker-compose/loki-config.yml
+    mode: '0644'
+  become: true
+
+- name: Create Grafana config file
+  template:
+    src: templates/grafana.ini.j2
+    dest: /etc/docker-compose/grafana/grafana.ini
+    mode: '0644'
+  become: true
+
+- name: Copy Docker Compose file
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: /etc/docker-compose/docker-compose.yml
+    mode: '0644'
+  become: true
+
+- name: Start Docker Compose services
+  command: docker-compose -f /etc/docker-compose/docker-compose.yml up -d
+  become: true
+
+
+

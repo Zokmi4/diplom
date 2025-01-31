@@ -1,0 +1,42 @@
+version: '3.7'
+services:
+{% if inventory_hostname in groups['gcp_dev'] %}
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: always
+{% endif %}
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - /opt/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - /opt/monitoring/loki-config.yml:/etc/loki/local-config.yaml
+    restart: always
+
+  node_exporter:
+    image: prom/node-exporter
+    container_name: node_exporter
+    ports:
+      - "9100:9100"
+    restart: always
+
+volumes:
+{% if inventory_hostname in groups['gcp_dev'] %}
+  grafana-data: {}
+{% endif %}

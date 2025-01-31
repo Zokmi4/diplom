@@ -1,0 +1,21 @@
+$ModLoad imudp
+$UDPServerRun 514
+$ModLoad imtcp
+$InputTCPServerRun 514
+*.* /var/log/remote/all_messages.log
+authpriv.* /var/log/remote/authpriv_messages.log
+mail.* /var/log/remote/mail_messages.log
+module(load="omhttp")
+action(
+  type="omhttp"
+  server="localhost"
+  serverport="3100"
+  endpoint="/loki/api/v1/push"
+  action.resumeRetryCount="-1"
+  queue.type="linkedList"
+  queue.size="10000"
+  queue.dequeueBatchSize="1000"
+  queue.workerThreads="4"
+  usehttps="off"
+  format="json"
+)

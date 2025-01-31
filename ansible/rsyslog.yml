@@ -1,0 +1,6 @@
+---
+- name: Установка и настройка rsyslog
+  hosts: all
+  become: true
+  roles:
+    - rsyslog
