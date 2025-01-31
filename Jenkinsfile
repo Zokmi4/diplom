@@ -51,27 +51,18 @@ pipeline {
                 }
             }
         }
-
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    // Запускаем контейнер с меткой
-                    sh 'docker run -d --name zokmi4_diplom_${env.BUILD_ID} zokmi4/diplom:${env.BUILD_ID}'
-                }
-            }
-        }
     }
 
     post {
         always {
             script {
                 try {
-                    // Удаляем только контейнер с меткой
-                    def containerId = sh(script: 'docker ps -aqf "name=zokmi4_diplom_${env.BUILD_ID}"', returnStdout: true).trim()
-                    if (containerId) {
-                        sh "docker rm -f ${containerId}"
+                    // Удаляем контейнер с именем zokmi4/diplom, если он существует
+                    def containers = sh(script: 'docker ps -aqf "name=zokmi4_diplom_"', returnStdout: true).trim()
+                    if (containers) {
+                        sh "docker rm -f ${containers}"
                     } else {
-                        echo 'Контейнер для удаления не найден.'
+                        echo 'Нет контейнеров для удаления.'
                     }
                 } catch (Exception e) {
                     echo "Error during cleanup: ${e.message}"
