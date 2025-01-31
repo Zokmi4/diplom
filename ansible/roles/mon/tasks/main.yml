@@ -5,36 +5,30 @@
     state: started
     enabled: true
 
-- name: Создать директорию для Docker Compose
+- name: Создать необходимые директории
   file:
-    path: /opt/docker-compose
+    path: "{{ item }}"
     state: directory
+  loop:
+    - /opt/docker-compose
+    - /opt/docker-compose/grafana
 
-- name: Создать поддиректорию для конфигураций Grafana
-  file:
-    path: /opt/docker-compose/grafana
-    state: directory
-
-- name: Настроить Docker Compose
+- name: Скопировать файлы конфигураций и шаблоны
   copy:
-    src: files/docker-compose.yml
-    dest: /opt/docker-compose/docker-compose.yml
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: 'files/docker-compose.yml', dest: '/opt/docker-compose/docker-compose.yml' }
+    - { src: 'files/loki-config.yml', dest: '/opt/docker-compose/loki-config.yml' }
 
-- name: Настроить Prometheus
+- name: Настроить файлы шаблонов
   template:
-    src: templates/prometheus.yml.j2
-    dest: /opt/docker-compose/prometheus.yml
-
-- name: Настроить Grafana (только на дев-машине)
-  template:
-    src: templates/grafana.ini.j2
-    dest: /opt/docker-compose/grafana/grafana.ini
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: 'templates/prometheus.yml.j2', dest: '/opt/docker-compose/prometheus.yml' }
+    - { src: 'templates/grafana.ini.j2', dest: '/opt/docker-compose/grafana/grafana.ini' }
   when: inventory_hostname == "34.56.209.145"
-
-- name: Настроить Loki
-  copy:
-    src: files/loki-config.yml
-    dest: /opt/docker-compose/loki-config.yml
 
 - name: Создать Dockerfile для Node Exporter
   copy:

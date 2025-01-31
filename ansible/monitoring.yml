@@ -1,27 +1,6 @@
 ---
-- hosts: gcp_dev
+- name: Настройка и запуск сервисов с использованием Docker и Docker Compose
+  hosts: all
+  become: true
   roles:
-    - role: monitoring
-  vars:
-    host1: "34.56.209.145"
-    host2: "34.41.24.58"
-    host3: "34.134.198.174"
-    leader_host: "34.134.198.174"
-
-- hosts: gcp_prod
-  roles:
-    - role: monitoring
-  vars:
-    host1: "34.56.209.145"
-    host2: "34.41.24.58"
-    host3: "34.134.198.174"
-    leader_host: "34.134.198.174"
-
-- hosts: gcp_test
-  roles:
-    - role: monitoring
-  vars:
-    host1: "34.56.209.145"
-    host2: "34.41.24.58"
-    host3: "34.134.198.174"
-    leader_host: "34.134.198.174"
+    - mon
