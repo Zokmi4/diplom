@@ -52,15 +52,20 @@ pipeline {
             }
         }
     }
-post {
+
+    post {
         always {
             script {
-                // Получение списка контейнеров для удаления
-                def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
-                if (containers) {
-                    sh "docker rm -f ${containers}"
-                } else {
-                    echo 'Нет контейнеров для удаления.'
+                try {
+                    // Получение списка контейнеров для удаления
+                    def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
+                    if (containers) {
+                        sh "docker rm -f ${containers}"
+                    } else {
+                        echo 'Нет контейнеров для удаления.'
+                    }
+                } catch (Exception e) {
+                    echo "Error during cleanup: ${e.message}"
                 }
             }
             emailext (
