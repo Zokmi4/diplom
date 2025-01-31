@@ -52,28 +52,3 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            script {
-                try {
-                    // Получение списка контейнеров для удаления
-                    def containers = sh(script: 'docker ps -aq', returnStdout: true).trim()
-                    if (containers) {
-                        sh "docker rm -f ${containers}"
-                    } else {
-                        echo 'Нет контейнеров для удаления.'
-                    }
-                } catch (Exception e) {
-                    echo "Error during cleanup: ${e.message}"
-                }
-            }
-            emailext (
-                to: 'mazay.cod@gmail.com',
-                subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
-                body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
-                attachLog: true
-            )
-        }
-    }
-}
