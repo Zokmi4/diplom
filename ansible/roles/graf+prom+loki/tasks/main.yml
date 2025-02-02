@@ -52,6 +52,20 @@
     mode: '0644'
   become: true
 
+- name: Create Alertmanager config file
+  template:
+    src: templates/alertmanager.yml.j2
+    dest: /etc/docker-compose/alertmanager.yml
+    mode: '0644'
+  become: true
+
+- name: Create alert rules file
+  template:
+    src: templates/alerts.yml.j2
+    dest: /etc/docker-compose/alerts.yml
+    mode: '0644'
+  become: true
+
 - name: Copy Docker Compose file
   template:
     src: templates/docker-compose.yml.j2
@@ -62,6 +76,3 @@
 - name: Start Docker Compose services
   command: docker-compose -f /etc/docker-compose/docker-compose.yml up -d
   become: true
-
-
-
