@@ -24,3 +24,11 @@ services:
       - "3100:3100"
     restart: always
 
+  promtail:
+    image: grafana/promtail:3.2.1
+    volumes:
+      - /var/log:/var/log
+      - /etc/docker-compose/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+    command: -config.file=/etc/promtail/promtail-config.yml
+    restart: always
+
