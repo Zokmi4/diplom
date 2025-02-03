@@ -1,0 +1,6 @@
+---
+- name: Установка node_exporter
+  hosts: all
+  become: true
+  roles:
+    - node_ex

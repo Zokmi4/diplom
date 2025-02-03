@@ -1,0 +1,30 @@
+---
+- name: Recreate Docker Compose directory
+  file:
+    path: /etc/docker-compose/grafana
+    state: directory
+    mode: '0755'
+    recurse: true
+  become: true
+
+- name: Copy configuration files
+  template:
+    src: "templates/{{ item }}"
+    dest: "/etc/docker-compose/{{ item | regex_replace('.j2$', '') }}"
+    mode: '0644'
+  loop:
+    - prometheus.yml.j2
+    - logstash-config.yml.j2
+    - logstash-pipeline.conf.j2
+    - grafana.ini.j2
+    - alertmanager.yml.j2
+    - alerts.yml.j2
+    - docker-compose.yml.j2
+    - loki-config.yml.j2
+  become: true
+
+- name: Start Docker Compose services
+  community.docker.docker_compose:
+    project_src: /etc/docker-compose
+    state: present
+  become: true

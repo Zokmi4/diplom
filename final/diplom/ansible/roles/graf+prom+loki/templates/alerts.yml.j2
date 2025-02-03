@@ -1,0 +1,56 @@
+groups:
+  - name: node_exporter_alerts
+    rules:
+      - alert: InstanceDown
+        expr: up{job="node_exporter"} == 0
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Instance down"
+          description: "An instance of job node_exporter has been down for more than 5 minutes."
+
+      - alert: HighCPUUsage
+        expr: (100 - avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m]) * 100)) > 75
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 75%."
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 75
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 75%."
+
+      - alert: DiskSpaceUsed
+        expr: (100.0 - (node_filesystem_avail_bytes / node_filesystem_size_bytes * 100)) > 80
+        for: 10m
+        labels:
+          severity: page
+        annotations:
+          summary: "Disk space usage above 80%"
+          description: "Disk space usage is above 80%."
+
+      - alert: HighNetworkTrafficReceive
+        expr: irate(node_network_receive_bytes_total[5m]) * 8 > 5000
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "High network traffic (receive)"
+          description: "Network receive traffic is above 5000 bits per second."
+
+      - alert: HighNetworkTrafficTransmit
+        expr: irate(node_network_transmit_bytes_total[5m]) * 8 > 5000
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "High network traffic (transmit)"
+          description: "Network transmit traffic is above 5000 bits per second."

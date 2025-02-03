@@ -1,0 +1,6 @@
+---
+- name: Установка и настройка rsyslog
+  import_tasks: install_rsyslog.yml
+
+- name: Настройка rsyslog
+  import_tasks: configure_rsyslog.yml
