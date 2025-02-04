@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent1' }
+    agent { label 'agent 1' }
 
     stages {
         stage('Clone and Update Repository') {
