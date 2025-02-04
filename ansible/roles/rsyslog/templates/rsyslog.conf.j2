@@ -1,25 +1,22 @@
-# Установка рабочего каталога
-global(workDirectory="/var/spool/rsyslog")
+##############################
+####  ОТПРАВКА ЛОГОВ НА СЕРВЕР  ####
+##############################
 
-# Загрузка модуля для отправки логов
-module(load="imfile")
+# Отправка логов по TCP
+*.* @@10.128.0.21:514
 
-# Настройка чтения логов из файлов Kubernetes
-input(type="imfile"
-      File="/var/log/kubelet.log"
-      Tag="kubelet"
-      Severity="info"
-      Facility="local7")
+# Отправка логов по UDP
+*.* @10.128.0.21:514
 
-input(type="imfile"
-      File="/var/log/kube-proxy.log"
-      Tag="kube-proxy"
-      Severity="info"
-      Facility="local7")
+##############################
+####  ЛОКАЛЬНОЕ ЛОГИРОВАНИЕ  ####
+##############################
 
-# Отправка всех логов Kubernetes на сервер по TCP
-local7.* @@10.128.0.21:514
-
-# Отправка всех логов Kubernetes на сервер по UDP
-local7.* @10.128.0.21:514
-
+# Также сохраняем логи локально
+auth,authpriv.*          /var/log/auth.log
+*.*;auth,authpriv.none   -/var/log/syslog
+cron.*                   /var/log/cron.log
+daemon.*                 /var/log/daemon.log
+kern.*                   /var/log/kern.log
+lpr.*                    /var/log/lpr.log
+mail.*                   -/var/log/mail.log
