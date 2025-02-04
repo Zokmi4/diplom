@@ -14,8 +14,9 @@
 ### Скачивание репозитория
 
 Клонируем репозиторий по ссылке и переходим в директорию ansible:  
+```bash
 **[https://github.com/Zokmi4/diplom.git](https://github.com/Zokmi4/diplom.git)**
-cd /diplom/ansible
+cd diplom/ansible
 ---
 ### Установка основной инфраструктуры (Docker, Docker Compose, Jenkins, k3s, Helm)
 
