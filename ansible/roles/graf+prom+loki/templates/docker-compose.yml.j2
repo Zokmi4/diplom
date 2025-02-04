@@ -17,22 +17,6 @@ services:
       - "3000:3000"
     restart: always
 
-  loki:
-    image: grafana/loki:latest
-    volumes:
-      - /etc/docker-compose/loki-config.yml:/etc/loki/loki-config.yaml
-    ports:
-      - "3100:3100"
-    restart: always
-
-  promtail:
-    image: grafana/promtail:3.2.1
-    volumes:
-      - /var/log:/var/log
-      - /etc/docker-compose/promtail-config.yml:/etc/promtail/promtail-config.yml
-    command: -config.file=/etc/promtail/promtail-config.yml
-    restart: always
-
   alertmanager:
     image: prom/alertmanager:latest
     volumes:

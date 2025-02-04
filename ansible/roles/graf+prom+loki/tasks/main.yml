@@ -31,20 +31,6 @@
     mode: '0644'
   become: true
 
-- name: Create Promtail config file
-  template:
-    src: templates/promtail-config.yml.j2
-    dest: /etc/docker-compose/promtail-config.yml
-    mode: '0644'
-  become: true
-
-- name: Create Loki config file
-  template:
-    src: templates/loki-config.yml.j2
-    dest: /etc/docker-compose/loki-config.yml
-    mode: '0644'
-  become: true
-
 - name: Create Grafana config file
   template:
     src: templates/grafana.ini.j2
