@@ -1,6 +1,0 @@
----
-- name: Установка Promtail в Docker и настройка на сбор логов с rsyslog
-  hosts: gcp_dev
-  become: yes
-  roles:
-    - promtail_docker
