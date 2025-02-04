@@ -4,7 +4,10 @@
 
 Используются 3 виртуальные машины на базе Google Cloud:  
 Предварительно, их можно поднять с помощью Terraform. Файл `terraform.tf` прилагается.
-
+```bash
+terraform plan
+terraform apply
+```
 - **34.56.209.145** (Dev-server): Docker, Docker Compose, Jenkins Agent 1  
 - **34.134.198.174** (Prod-server): Jenkins Server  
 - **34.41.24.58** (Test-server): Docker, Docker Compose, k3s, Helm, Jenkins Agent 2  
