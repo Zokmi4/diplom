@@ -9,7 +9,7 @@
 - **34.134.198.174** (Test-server): Jenkins Server  
 - **34.41.24.58** (Prod-server): Docker, Docker Compose, k3s, Helm, Jenkins Agent 2  
 
-![gcloud](https://github.com/Zokmi4/diplom/images/gloud.png)
+![gcloud](https://github.com/Zokmi4/diplom/blob/main/images/gloud.png)
 
 ### Скачивание репозитория
 
@@ -32,7 +32,7 @@ ansible-playbook -i hosts playbook.yml
 Настраиваем Jenkins, после чего он будет доступен по адресу:  
 **[http://34.41.24.58:8080/](http://34.41.24.58:8080/)**  
 
-![jenkins](https://github.com/Zokmi4/diplom/images/jenkins.png)
+![jenkins](https://github.com/Zokmi4/diplom/blob/main/images/jenkins.png)
 
 ---
 
@@ -64,7 +64,7 @@ ansible-playbook -i hosts node_ex.yml
 
 Теперь у нас доступен мониторинг всех 3 машин.  
 
-![grafana](https://github.com/Zokmi4/diplom/images/grafana.png)
+![grafana](https://github.com/Zokmi4/diplom/blob/main/images/grafana.png)
 
 ---
 
@@ -82,7 +82,7 @@ Prod и Test сервера отправляют логи на Dev машину.
 logger -n 10.128.0.22 -P 514 -T "Любой текст"
 ```
 
-![rsyslog](https://github.com/Zokmi4/diplom/images/rsyslog.png)
+![rsyslog](https://github.com/Zokmi4/diplom/blob/main/images/rsyslog.png)
 
 ---
 
@@ -117,5 +117,5 @@ logger -n 10.128.0.22 -P 514 -T "Любой текст"
 Приложение доступно по адресу:  
 **[http://34.134.198.174.nip.io/](http://34.134.198.174.nip.io/)**  
 
-![calc](https://github.com/Zokmi4/diplom/images/calc.png)
+![calc](https://github.com/Zokmi4/diplom/blob/main/images/calc.png)
 
