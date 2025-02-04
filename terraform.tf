@@ -70,43 +70,26 @@ resource "google_compute_instance" "prod" {
   depends_on = [google_compute_health_check.default]
 }
 
-# Правило для разрешения доступа к Jenkins (порт 8080)
-resource "google_compute_firewall" "jenkins-firewall" {
-  name    = "jenkins-firewall"
+# Firewall rules
+resource "google_compute_firewall" "additional-ports" {
+  name    = "additional-ports-firewall"
   network = "default"
+  
   allow {
     protocol = "tcp"
-    ports    = ["8080"]
+    ports    = ["514", "1514", "3000", "3100", "5044", "5601", "9080", "9090", "9093", "9100", "9200", "9600"]
   }
+
+  allow {
+    protocol = "udp"
+    ports    = ["514", "1514"]
+  }
+
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["http-server"]
 }
 
-# Правило для разрешения HTTP трафика (порт 80)
-resource "google_compute_firewall" "http-firewall" {
-  name    = "http-firewall"
-  network = "default"
-  allow {
-    protocol = "tcp"
-    ports    = ["80"]
-  }
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["http-server"]
-}
-
-# Правило для разрешения HTTPS трафика (порт 443)
-resource "google_compute_firewall" "https-firewall" {
-  name    = "https-firewall"
-  network = "default"
-  allow {
-    protocol = "tcp"
-    ports    = ["443"]
-  }
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["http-server"]
-}
-
-# Output для test-инстанса
+# Output for test instance
 output "test_instance_name" {
   value = google_compute_instance.test.name
 }
@@ -115,7 +98,7 @@ output "test_instance_ip" {
   value = google_compute_instance.test.network_interface[0].access_config[0].nat_ip
 }
 
-# Output для prod-инстанса
+# Output for prod instance
 output "prod_instance_name" {
   value = google_compute_instance.prod.name
 }
