@@ -69,7 +69,7 @@ pipeline {
                 }
             }
             emailext (
-                to: 'mazay.cod@gmail.com',
+                to: 'masarnouskistanislau@gmail.com',
                 subject: "Jenkins Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) завершился",
                 body: "Статус сборки: ${currentBuild.currentResult}\n\nСсылка на сборку: ${env.BUILD_URL}",
                 attachLog: true
