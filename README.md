@@ -18,6 +18,7 @@
 git clone https://github.com/Zokmi4/diplom.git
 cd diplom/ansible
 ---
+
 ### Установка основной инфраструктуры (Docker, Docker Compose, Jenkins, k3s, Helm)
 
 ```bash
