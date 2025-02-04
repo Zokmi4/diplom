@@ -1,2 +1,0 @@
-# diplom
-Teachmeskills diplom

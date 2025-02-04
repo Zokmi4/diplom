@@ -1,4 +1,0 @@
----
-docker_compose_path: /etc/docker-compose
-prometheus_scrape_interval: "15s"  
-grafana_http_port: "3000"  

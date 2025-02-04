@@ -1,6 +1,0 @@
----
-- name: Настройка и запуск сервисов с использованием Docker и Docker Compose
-  hosts: gcp_dev
-  become: true
-  roles:
-    - graf+prom+loki
