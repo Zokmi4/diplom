@@ -6,13 +6,13 @@ pipeline {
             steps {
                 script {
                     // Клонирование репозитория
-                    git branch: 'main', credentialsId: 'git', url: 'https://github.com/Zokmi4/diplom.git'
+                    git branch: 'main', credentialsId: '2', url: 'https://github.com/Zokmi4/diplom.git'
 
                     // Обновление репозитория с помощью git fetch
                     sh 'git fetch --all'  // Загружает все изменения, но не сливает их
 
                     // Или можно использовать git pull, чтобы сразу применить изменения
-                    // sh 'git pull origin main'
+                    // sh 'git pull'
                 }
             }
         }
